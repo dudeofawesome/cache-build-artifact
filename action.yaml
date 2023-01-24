@@ -18,20 +18,20 @@ runs:
       id: 'name'
       run: |-
         if [ -n "${{ inputs.archive-name }}" ]; then
-          echo "::set-output name=archive-name::${{ inputs.archive-name }}"
+          echo "archive_name=${{ inputs.archive-name }}" >> "$GITHUB_OUTPUT"
         else
-          echo "::set-output name=archive-name::build-${{ github.sha }}"
+          echo "archive_name=build-${{ github.sha }}" >> "$GITHUB_OUTPUT"
         fi
       shell: 'bash'
     - name: 'Tar files 🤐'
       run: >-
         tar --create \
-          --file "/tmp/${{ steps.name.outputs.archive-name }}.tar" \
+          --file "/tmp/${{ steps.name.outputs.archive_name }}.tar" \
           "${{ inputs.path }}";
       shell: 'bash'
     - name: 'Cache build 🧩'
       uses: 'actions/upload-artifact@v3'
       with:
-        name: '${{ steps.name.outputs.archive-name }}'
-        path: '/tmp/${{ steps.name.outputs.archive-name }}.tar'
+        name: '${{ steps.name.outputs.archive_name }}'
+        path: '/tmp/${{ steps.name.outputs.archive_name }}.tar'
         retention-days: 1
